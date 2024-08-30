@@ -1,0 +1,18 @@
+apiVersion: turtles-capi.cattle.io/v1alpha1
+kind: CAPIProvider
+metadata:
+  name: aws-infra
+  namespace: default # Resource is namespace scoped.
+spec:
+  name: aws # Defines the provider kind to provision.
+  type: infrastructure # CAPI Provider resource kind to provision.
+  variables: # Additional environment variables to be declared inside the referenced spec.configSecret
+    CAPA_LOGLEVEL: "4"
+  configSecret:
+    name: aws-credentials # This secret will be created or adjusted based on the content of the spec.features and spec.variables, without overriding non-overlapping content.
+  credentials:
+    rancherCloudCredential: aws-creds # Rancher secret content will be translated to CAPI Operator environment secret.
+  features: # Additional features to be declared inside the referenced spec.configSecret.
+    clusterResourceSet: true
+    clusterTopology: true
+    machinePool: true

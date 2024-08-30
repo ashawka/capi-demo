@@ -1,0 +1,29 @@
+# ---
+# Will be generated programmatically to avoid hardcoding credentials
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: aws-variables
+#   namespace: capa-system
+# type: Opaque
+# stringData:
+#   AWS_B64ENCODED_CREDENTIALS: ZZ99ii==
+#   ExternalResourceGC: "true"
+---
+apiVersion: turtles-capi.cattle.io/v1alpha1
+kind: CAPIProvider
+metadata:
+  name: aws
+  namespace: capa-system
+spec:
+  name: aws
+  type: infrastructure # required
+  version: v2.6.1
+  configSecret:
+    name: aws-variables # This will additionally populate the default set of feature gates for the provider inside the secret
+  variables:
+    EXP_MACHINE_POOL: "true"
+    EXP_EXTERNAL_RESOURCE_GC: "true"
+    CAPA_LOGLEVEL: "4"
+  manager:
+    syncPeriod: "5m"
