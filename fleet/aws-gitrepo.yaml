@@ -1,9 +1,0 @@
-apiVersion: fleet.cattle.io/v1alpha1
-kind: GitRepo
-metadata:
-  name: clusters
-  namespace: fleet-local
-spec:
-  branch: main
-  repo: https://github.com/mak3r/capi-demo/tree/main/fleet/aws/small
-  targets: []

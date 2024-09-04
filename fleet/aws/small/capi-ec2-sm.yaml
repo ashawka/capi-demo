@@ -218,6 +218,11 @@ kind: AWSClusterControllerIdentity
 metadata:
   name: default
   namespace: default
+  labels:
+    app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: "clusters-fleet-aws-small"
+    meta.helm.sh/release-namespace: "default"
 spec:
   allowedNamespaces:
     list:

@@ -1,0 +1,21 @@
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: clusters
+  namespace: fleet-local
+spec:
+  branch: main
+  correctDrift: {}
+  imageScanCommit:
+    authorEmail: ''
+    authorName: ''
+  paths:
+    - /fleet/aws/small
+  repo: https://github.com/mak3r/capi-demo
+  targets:
+    - clusterSelector:
+        matchExpressions:
+          - key: provider.cattle.io
+            operator: NotIn
+            values:
+              - harvester
