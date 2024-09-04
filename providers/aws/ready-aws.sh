@@ -37,6 +37,7 @@ prep_env() {
     export CONTROL_PLANE_MACHINE_COUNT=3
     export WORKER_MACHINE_COUNT=2
     export AWS_B64ENCODED_CREDENTIALS=$(clusterawsadm bootstrap credentials encode-as-profile)
+    export KUBERNETES_VERSION=v1.30.3
 }
 
 generate_secret() {

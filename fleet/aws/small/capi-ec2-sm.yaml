@@ -1,12 +1,11 @@
----
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: Cluster
 metadata:
   labels:
     ccm: external
     csi: external
-  name: ${CLUSTER_NAME}
-  namespace: ${NAMESPACE}
+  name: capi-ec2-sm
+  namespace: default
 spec:
   clusterNetwork:
     pods:
@@ -15,17 +14,17 @@ spec:
   controlPlaneRef:
     apiVersion: controlplane.cluster.x-k8s.io/v1beta1
     kind: RKE2ControlPlane
-    name: ${CLUSTER_NAME}-control-plane
+    name: capi-ec2-sm-control-plane
   infrastructureRef:
     apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
     kind: AWSCluster
-    name: ${CLUSTER_NAME}
+    name: capi-ec2-sm
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
 kind: AWSCluster
 metadata:
-  name: ${CLUSTER_NAME}
-  namespace: ${NAMESPACE}
+  name: capi-ec2-sm
+  namespace: default
 spec:
   bastion:
     enabled: true
@@ -82,132 +81,131 @@ spec:
     - description: Calico Typha
       fromPort: 5473
       protocol: tcp
-      toPort: 5473
       sourceSecurityGroupRoles:
       - node
       - controlplane
       - apiserver-lb
       - lb
+      toPort: 5473
     - description: Calico Typha health check
       fromPort: 9098
       protocol: tcp
-      toPort: 9098
       sourceSecurityGroupRoles:
       - node
       - controlplane
       - apiserver-lb
       - lb
+      toPort: 9098
     - description: Calico health check
       fromPort: 9099
       protocol: tcp
-      toPort: 9099
       sourceSecurityGroupRoles:
       - node
       - controlplane
       - apiserver-lb
       - lb
+      toPort: 9099
     vpc:
       availabilityZoneUsageLimit: 1
-  region: ${AWS_REGION}
-  sshKeyName: ${AWS_SSH_KEY_NAME}
-
+  region: us-east-1
+  sshKeyName: mak3r-suse-key-pair-2
 ---
 apiVersion: controlplane.cluster.x-k8s.io/v1beta1
 kind: RKE2ControlPlane
 metadata:
-  name: ${CLUSTER_NAME}-control-plane
-  namespace: ${NAMESPACE}
+  name: capi-ec2-sm-control-plane
+  namespace: default
 spec:
-  version: ${RKE2_VERSION}
-  preRKE2Commands:
-  - sudo hostnamectl set-hostname $(curl -s http://169.254.169.254/1.0/meta-data/hostname)
   agentConfig:
     airGapped: true
   infrastructureRef:
     apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
     kind: AWSMachineTemplate
-    name: ${CLUSTER_NAME}-control-plane
+    name: capi-ec2-sm-control-plane
   nodeDrainTimeout: 2m
-  replicas: ${CONTROL_PLANE_MACHINE_COUNT}
+  preRKE2Commands:
+  - sudo hostnamectl set-hostname $(curl -s http://169.254.169.254/1.0/meta-data/hostname)
+  registrationMethod: internal-first
+  replicas: 1
+  rolloutStrategy:
+    rollingUpdate:
+      maxSurge: 1
+    type: RollingUpdate
   serverConfig:
     cloudProviderName: external
     cni: calico
     etcd:
       backupConfig:
         retention: "10"
-        scheduleCron: "*/15 * * * *"
-  rolloutStrategy:
-    type: "RollingUpdate"
-    rollingUpdate:
-      maxSurge: 1
-  registrationMethod: "control-plane-endpoint"
+        scheduleCron: '*/15 * * * *'
+  version: v1.30.3+rke2r1
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
 kind: AWSMachineTemplate
 metadata:
-  name: ${CLUSTER_NAME}-control-plane
-  namespace: ${NAMESPACE}
+  name: capi-ec2-sm-control-plane
+  namespace: default
 spec:
   template:
     spec:
       ami:
-        id: ${AWS_AMI_ID}
+        id: ami-04418d0a73ebfbb4a
       iamInstanceProfile: control-plane.cluster-api-provider-aws.sigs.k8s.io
-      instanceType: ${AWS_CONTROL_PLANE_MACHINE_TYPE}
+      instanceType: t3a.large
       rootVolume:
         size: 50
-      sshKeyName: ${AWS_SSH_KEY_NAME}
+      sshKeyName: mak3r-suse-key-pair-2
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: MachineDeployment
 metadata:
-  name: ${CLUSTER_NAME}-md-0
-  namespace: ${NAMESPACE}
+  name: capi-ec2-sm-md-0
+  namespace: default
 spec:
-  clusterName: ${CLUSTER_NAME}
-  replicas: ${WORKER_MACHINE_COUNT}
+  clusterName: capi-ec2-sm
+  replicas: 1
   selector:
     matchLabels:
-      cluster.x-k8s.io/cluster-name: ${CLUSTER_NAME}
+      cluster.x-k8s.io/cluster-name: capi-ec2-sm
   template:
     metadata:
       labels:
-        cluster.x-k8s.io/cluster-name: ${CLUSTER_NAME}
+        cluster.x-k8s.io/cluster-name: capi-ec2-sm
     spec:
-      clusterName: ${CLUSTER_NAME}
-      version: ${RKE2_VERSION}
       bootstrap:
         configRef:
           apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
           kind: RKE2ConfigTemplate
-          name: ${CLUSTER_NAME}-md-0
+          name: capi-ec2-sm-md-0
+      clusterName: capi-ec2-sm
       infrastructureRef:
-        name: ${CLUSTER_NAME}-md-0
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
         kind: AWSMachineTemplate
+        name: capi-ec2-sm-md-0
+      version: v1.30.3+rke2r1
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
 kind: AWSMachineTemplate
 metadata:
-  name: ${CLUSTER_NAME}-md-0
-  namespace: ${NAMESPACE}
+  name: capi-ec2-sm-md-0
+  namespace: default
 spec:
   template:
     spec:
       ami:
-        id: ${AWS_AMI_ID}
-      instanceType: "${AWS_NODE_MACHINE_TYPE}"
-      iamInstanceProfile: "nodes.cluster-api-provider-aws.sigs.k8s.io"
-      sshKeyName: "${AWS_SSH_KEY_NAME}"
-      rootVolume: 
+        id: ami-04418d0a73ebfbb4a
+      iamInstanceProfile: nodes.cluster-api-provider-aws.sigs.k8s.io
+      instanceType: t3a.large
+      rootVolume:
         size: 50
+      sshKeyName: mak3r-suse-key-pair-2
 ---
 apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
 kind: RKE2ConfigTemplate
 metadata:
-  name: ${CLUSTER_NAME}-md-0
-  namespace: ${NAMESPACE}
-spec: 
+  name: capi-ec2-sm-md-0
+  namespace: default
+spec:
   template:
     spec:
       agentConfig:
@@ -219,16 +217,17 @@ apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
 kind: AWSClusterControllerIdentity
 metadata:
   name: default
-  namespace: ${NAMESPACE}
+  namespace: default
 spec:
   allowedNamespaces:
     list:
-    - ${NAMESPACE}
+    - default
 ---
 apiVersion: addons.cluster.x-k8s.io/v1beta1
 kind: ClusterResourceSet
 metadata:
   name: crs-ccm
+  namespace: default
 spec:
   clusterSelector:
     matchLabels:
@@ -242,6 +241,7 @@ apiVersion: addons.cluster.x-k8s.io/v1beta1
 kind: ClusterResourceSet
 metadata:
   name: crs-csi
+  namespace: default
 spec:
   clusterSelector:
     matchLabels:
@@ -436,6 +436,7 @@ metadata:
   labels:
     type: generated
   name: cloud-controller-manager-addon
+  namespace: default
 ---
 apiVersion: v1
 data:
@@ -1113,3 +1114,4 @@ metadata:
   labels:
     type: generated
   name: aws-ebs-csi-driver-addon
+  namespace: default
