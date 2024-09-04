@@ -4,6 +4,7 @@ metadata:
   labels:
     ccm: external
     csi: external
+    geo: ny
   name: capi-ec2-sm
   namespace: default
 spec:
