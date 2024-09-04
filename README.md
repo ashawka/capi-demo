@@ -25,6 +25,8 @@ Original docs here: https://github.com/rancher/cluster-api-provider-rke2/blob/ma
 1. edit aws/opensuse-leap-156.json with valid existing AMI
 1. build command uses 156 not 155 (which is in the docs)
 
+---
+
 ### Initial setup
 
 1. Install Rancher Turtles
@@ -49,6 +51,8 @@ Original docs here: https://github.com/rancher/cluster-api-provider-rke2/blob/ma
 1. Install the Infrastucture provider
 
     `kubectl apply -f providers/aws/InfrastructureProviderAWS.yaml`
+
+--- 
 
 ### Create a cluster (requires completion of Initial Setup)
 
