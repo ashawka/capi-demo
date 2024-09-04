@@ -10,6 +10,23 @@ CAPI Demo on Rancher Manager using Turtles
 
 ## AWS infra with RKE2 k8s - Steps
 
+### Build an AMI
+Original docs here: https://github.com/rancher/cluster-api-provider-rke2/blob/main/image-builder/README.md
+
+#### Prerequisites
+* Hashicorp packer
+* AWS packer plugin 
+
+    `packer plugins install github.com/hashicorp/amazon` 
+
+#### Build AMI
+1. Checkout the https://github.com/rancher/cluster-api-provider-rke2/tree/main project locally
+1. cd into the image-builder directory
+1. edit aws/opensuse-leap-156.json with valid existing AMI
+1. build command uses 156 not 155 (which is in the docs)
+
+### Initial setup
+
 1. Install Rancher Turtles
 1. Source some bash functions for the next steps
 
@@ -17,9 +34,9 @@ CAPI Demo on Rancher Manager using Turtles
 1. Prep env variables
 
     `prep_env [your-aws-ssh-key-name]`
-<!-- 1. Setup IAM profile
+1. Setup IAM profile
 
-    `clusterawsadm bootstrap iam create-cloudformation-stack` -->
+    `clusterawsadm bootstrap iam create-cloudformation-stack`
 1. Install the capa-system namespace
 
     `kubectl apply -f providers/aws/ns.yaml`
@@ -32,13 +49,18 @@ CAPI Demo on Rancher Manager using Turtles
 1. Install the Infrastucture provider
 
     `kubectl apply -f providers/aws/InfrastructureProviderAWS.yaml`
+
+### Create a cluster (requires completion of Initial Setup)
+
+1. Source some bash functions for the next steps
+
+    `source providers/aws/ready-aws.sh`
+1. Prep env variables
+
+    `prep_env [your-aws-ssh-key-name]`
 1. Create a cluster yaml configuration
 
     `create_cluster [cluster-name] > [cluster-name].yaml`
-1. Manually edit the `[cluster-name].yaml` 
-
-    * spec.registrationMethod can be one of [internal-first | internal-only-ips | external-only-ips | address | control-plane-endpoint]
-    * Add the `registrationMethod: "control-plane-endpoint"` to the RKE2ControlPlane `spec`
 1. Apply the cluster config
 
     `kubectl apply -f [cluster-name].yaml`

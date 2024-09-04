@@ -15,9 +15,21 @@ prep_env() {
     export AWS_REGION=us-east-1
     export AWS_SSH_KEY_NAME=$KEY_PAIR
     # "Name": "openSUSE-Leap-15.6-HVM-x86_64-prod-xkhy6u6pewna4"
-    # NOTE: Be sure to subscribe to use this AMI or chane it to use your own
+    # NOTE: Be sure to subscribe to use this AMI or change it to use your own
     # subscribe url: https://aws.amazon.com/marketplace/server/procurement?productId=prod-xkhy6u6pewna4
-    export AWS_AMI_ID="ami-019aa0ac90f597bf5"
+    # owner-id: 679593333241
+    # export AWS_AMI_ID="ami-019aa0ac90f597bf5"
+
+    # "Name": "Ubuntu Server 22.04 LTS (HVM), SSD Volume"
+    # export AWS_AMI_ID="ami-0a0e5d9c7acc336f1"
+
+    # Airgapped AMI
+    # "Name": "amazon-ebs.openSUSE-leap-15.6-rke2"
+    # us-east-1: ami-04418d0a73ebfbb4a
+    # us-west-1: ami-061e0d437b327464e
+    export AWS_AMI_ID="ami-04418d0a73ebfbb4a"
+
+
     # Select instance types
     export AWS_CONTROL_PLANE_MACHINE_TYPE=t3a.large
     export AWS_NODE_MACHINE_TYPE=t3a.large
@@ -56,7 +68,7 @@ create_cluster() {
     fi
 
     clusterctl generate cluster $NAME \
-        --from https://github.com/rancher/cluster-api-provider-rke2/blob/main/samples/aws/cluster-template.yaml \
+        --from https://github.com/mak3r/capi-demo/blob/main/providers/aws/cluster-template.yaml \
         > $NAME.yaml
 }
 
