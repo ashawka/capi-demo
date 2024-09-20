@@ -5,7 +5,7 @@
 Service Principal is reusable for multiple clusters
 
 1. Export Azure subscription ID
-    `export AZURE_SUBSCRIPTION_ID="1997a584-4807-4a5e-9940-0850794f039a"`
+    `export AZURE_SUBSCRIPTION_ID=$(az account show --query id)
 
 1. Create an Service Principal (SP) 
     `servicePrincipal=$(az ad sp create-for-rbac --role contributor --scopes="/subscriptions/${AZURE_SUBSCRIPTION_ID}")`
