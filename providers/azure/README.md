@@ -5,16 +5,16 @@
 Service Principal is reusable for multiple clusters
 
 1. Export Azure subscription ID
-    `export AZURE_SUBSCRIPTION_ID=$(az account show --query id)`
+    `export AZURE_SUBSCRIPTION_ID=$(az account show --query id | sed  s/\"//g)`
 
 1. Create an Service Principal (SP) 
-    `servicePrincipal=$(az ad sp create-for-rbac --role contributor --scopes="/subscriptions/${AZURE_SUBSCRIPTION_ID}")`
+    `az ad sp create-for-rbac --role contributor --scopes="/subscriptions/${AZURE_SUBSCRIPTION_ID}" > servicePrincipal.pvt`
 
 1. Read out secret and SP details into necessary environment variables
     ```
-    export AZURE_CLIENT_ID=$(echo $servicePrincipal | jq '.appId')
-    export AZURE_CLIENT_SECRET=$(echo $servicePrincipal | jq '.password')
-    export AZURE_TENANT_ID=$(echo $servicePrincipal | jq '.tenant')
+    export AZURE_CLIENT_ID=$(cat servicePrincipal.pvt | jq -r '.appId')
+    export AZURE_CLIENT_SECRET=$(cat servicePrincipal.pvt | jq -r '.password')
+    export AZURE_TENANT_ID=$(cat servicePrincipal.pvt | jq -r '.tenant')
     ```
 1. Create a resource group or use existing rg in Azure portal
 1. Add service principle user/role to resource group in Azure portal
@@ -28,8 +28,8 @@ Service Principal is reusable for multiple clusters
     export AZURE_CLUSTER_IDENTITY_SECRET_NAMESPACE="default" 
 
     export AZURE_LOCATION="eastus"
-    export AZURE_CONTROL_PLANE_MACHINE_TYPE="Standard_D2s_v3"
-    export AZURE_NODE_MACHINE_TYPE="Standard_D2s_v3"
+    export AZURE_CONTROL_PLANE_MACHINE_TYPE="Standard_D2s_v2"
+    export AZURE_NODE_MACHINE_TYPE="Standard_D2s_v2"
     export AZURE_RESOURCE_GROUP="mak3r-capi-rg"
     export EXP_MACHINE_POOL=true
     ```
@@ -37,14 +37,26 @@ Service Principal is reusable for multiple clusters
     `kubectl create secret generic "${AZURE_CLUSTER_IDENTITY_SECRET_NAME}" --from-literal=clientSecret="${AZURE_CLIENT_SECRET}" --namespace "${AZURE_CLUSTER_IDENTITY_SECRET_NAMESPACE}"`
 1. Finally, initialize the management cluster (This only needs to be done once per management cluster)
     `clusterctl init --infrastructure azure`
+
+## Create cluster from toilet
+1. Generate environment variables
+    ```
+    export CLUSTER_NAME=aks-frm-tmplt-01
+    export KUBERNETES_VERSION=v1.30.3
+    export CONTROL_PLANE_MACHINE_COUNT=3
+    export WORKER_MACHINE_COUNT=2
+    ```
+1. Create cluster config from clusterctl
+    `clusterctl generate cluster $CLUSTER_NAME --from ./providers/azure/azure-aks-mmp.yaml --flavor aks > "$CLUSTER_NAME".yaml`
+
+## Create cluster config from clusterctl
 1. Generate cluster configuration
     ```
-    clusterctl generate cluster demo-azure-09 \
-    --infrastructure azure \
+    clusterctl generate cluster demo-azure-12 \
     --kubernetes-version v1.30.3 \
     --worker-machine-count=2 \
     --flavor aks \
-    > demo-azure-09.yaml
+    > demo-azure-12.yaml
     ```
 1. Modify yaml
     `yq -i "with(. | select(.kind == \"AzureClusterIdentity\"); .spec.type |= \"ServicePrincipal\" | .spec.clientSecret.name |= \"${AZURE_CLUSTER_IDENTITY_SECRET_NAME}\" | .spec.clientSecret.namespace |= \"${AZURE_CLUSTER_IDENTITY_SECRET_NAMESPACE}\")" demo-azure-09.yaml`
