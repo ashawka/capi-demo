@@ -79,3 +79,66 @@ helm install calico projectcalico/tigera-operator --kubeconfig=./demo-azure-08.k
     --from ./providers/azure/azure-aks-mmp.yaml \
     > demo-azure-11.yaml
     ```
+
+=====================
+
+## From AKS ASO template
+1. Install ASO service operator
+    ```
+    helm repo add aso2 https://raw.githubusercontent.com/Azure/azure-service-operator/main/v2/charts
+    helm upgrade --install aso2 aso2/azure-service-operator \
+        --create-namespace \
+        --namespace=azureserviceoperator-system \
+        --set crdPattern='resources.azure.com/*;containerservice.azure.com/*;keyvault.azure.com/*;managedidentity.azure.com/*;eventhub.azure.com/*'
+    ```
+1. Export Azure subscription ID
+    `export AZURE_SUBSCRIPTION_ID=$(az account show --query id | sed  s/\"//g)`
+
+1. Create an Service Principal (SP) 
+    `az ad sp create-for-rbac -n azure-service-operator --role contributor --scopes="/subscriptions/${AZURE_SUBSCRIPTION_ID}" > servicePrincipal.pvt`
+
+1. Read out SP details into necessary environment variables
+    ```
+    export AZURE_CLIENT_ID=$(cat servicePrincipal.pvt | jq -r '.appId')
+    export AZURE_CLIENT_SECRET=$(cat servicePrincipal.pvt | jq -r '.password')
+    export AZURE_TENANT_ID=$(cat servicePrincipal.pvt | jq -r '.tenant')
+    ```
+
+1. Export configuration data
+    ```
+    export AZURE_NODE_MACHINE_TYPE="Standard_D2s_v2"
+    export CLUSTER_NAME=aks-aso-frm-tmplt
+    export KUBERNETES_VERSION=v1.30.3
+    export ASO_CREDENTIAL_SECRET_NAME=aso-credential
+    export AZURE_LOCATION=eastus
+    ```
+
+1. Create aso credential secret
+    ```
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: Secret
+    metadata:
+    name: aso-credential
+    namespace: default
+    stringData:
+    AZURE_SUBSCRIPTION_ID: "$AZURE_SUBSCRIPTION_ID"
+    AZURE_TENANT_ID: "$AZURE_TENANT_ID"
+    AZURE_CLIENT_ID: "$AZURE_CLIENT_ID"
+    AZURE_CLIENT_SECRET: "$AZURE_CLIENT_SECRET"
+    EOF
+    ```
+
+1. Generate cluster yaml from template
+    ```
+    clusterctl generate cluster $CLUSTER_NAME \
+    --from ./providers/azure/cluster-template-aks-aso.yaml \
+    > "$CLUSTER_NAME".yaml
+    ```
+
+1. Apply cluster configuration
+    `kubectl apply -f "$CLUSTER_NAME".yaml`
+
+## TEST
+1. Test ASO provider by creating a resource group through kubernetes
+    `kubectl apply -f providers/azure/aso-resource-group.yaml`
