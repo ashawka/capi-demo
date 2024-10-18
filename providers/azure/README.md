@@ -38,7 +38,7 @@ Service Principal is reusable for multiple clusters
 1. Finally, initialize the management cluster (This only needs to be done once per management cluster)
     `clusterctl init --infrastructure azure`
 
-## Create cluster from toilet
+## Create cluster from template
 1. Generate environment variables
     ```
     export CLUSTER_NAME=aks-frm-tmplt-01
@@ -50,13 +50,19 @@ Service Principal is reusable for multiple clusters
     `clusterctl generate cluster $CLUSTER_NAME --from ./providers/azure/azure-aks-mmp.yaml --flavor aks > "$CLUSTER_NAME".yaml`
 
 ## Create cluster config from clusterctl
+1. Generate environment variables
+    ```
+    export CLUSTER_NAME=aks-frm-clusterctl-01
+    export KUBERNETES_VERSION=v1.30.3
+    export WORKER_MACHINE_COUNT=2
+
 1. Generate cluster configuration
     ```
-    clusterctl generate cluster demo-azure-12 \
-    --kubernetes-version v1.30.3 \
-    --worker-machine-count=2 \
+    clusterctl generate cluster $CLUSTER_NAME \
+    --kubernetes-version $KUBERNETES_VERSION \
+    --worker-machine-count=$WORKER_MACHINE_COUNT \
     --flavor aks \
-    > demo-azure-12.yaml
+    > $CLUSTER_NAME.yaml
     ```
 1. Modify yaml
     `yq -i "with(. | select(.kind == \"AzureClusterIdentity\"); .spec.type |= \"ServicePrincipal\" | .spec.clientSecret.name |= \"${AZURE_CLUSTER_IDENTITY_SECRET_NAME}\" | .spec.clientSecret.namespace |= \"${AZURE_CLUSTER_IDENTITY_SECRET_NAMESPACE}\")" demo-azure-09.yaml`
