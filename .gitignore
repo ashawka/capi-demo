@@ -1,0 +1,5 @@
+# Private files
+*.pvt 
+*.key
+*.crt
+*.pem

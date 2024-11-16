@@ -62,7 +62,7 @@ Service Principal is reusable for multiple clusters
 1. Generate environment variables
 
     ```bash
-    export CLUSTER_NAME=aks-frm-clusterctl-01
+    export CLUSTER_NAME=aks-frm-clusterctl-02
     export KUBERNETES_VERSION=v1.30.3
     export WORKER_MACHINE_COUNT=2
 
