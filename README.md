@@ -45,16 +45,10 @@ Original docs here: https://github.com/rancher/cluster-api-provider-rke2/blob/ma
 1. Generate the secret
 
     `generate_secret`
-<!--
-1. Install a CAPI provider
 
-    `kubectl apply -f providers/aws/CAPIProvider.yaml`
--->
 1. Install the Infrastucture provider
 
     `kubectl apply -f providers/aws/InfrastructureProviderAWS.yaml`
-
---- 
 
 ### Create a cluster (requires completion of Initial Setup)
 
@@ -66,12 +60,17 @@ Original docs here: https://github.com/rancher/cluster-api-provider-rke2/blob/ma
 
     `prep_env [your-aws-ssh-key-name]`
 1. Create a cluster yaml configuration
+    * NOTE: This creates the cluster configuration and applies it.
 
     `create_cluster [cluster-name]`
-1. Apply the cluster config
-
-    `kubectl apply -f [cluster-name].yaml`
 
 ## Debugging
+
 If things don't go as expected, look at the capa-controller-manager pod logs. From there, hopefully you can work your way through other resources to figure out what is missing/misconfigured/etc.
 
+## Cleanup
+
+1. for each cluster created `kubectl delete -f <cluster_name>.yaml`
+1. Remove `<cluster>.yaml` files from the project.
+1. Remove namespaces created with clusters
+1. Delete the aws secret `kubectl delete secret aws-variables -n capa-system`
