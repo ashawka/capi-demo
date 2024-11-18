@@ -3,3 +3,6 @@
 *.key
 *.crt
 *.pem
+
+# don't commit any kubeconfigs
+kubeconfig*
