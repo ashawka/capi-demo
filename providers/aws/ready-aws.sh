@@ -70,5 +70,42 @@ create_cluster() {
     clusterctl generate cluster $NAME \
         --from https://github.com/mak3r/capi-demo/blob/main/providers/aws/cluster-template.yaml \
         > $NAME.yaml
+    kubectl apply -f $NAME.yaml
+}
+
+# Create a cluster in a specific namespace
+# Name then namespace as arguments
+create_cluster_in_namespace() {
+    NAME='default-cluster'
+    if [ -z "$1" ]; then
+        echo "Warning: No argument provided. 'default-cluster' will be used as the cluster name."
+    else
+        NAME=$1
+    fi
+
+    NAMESPACE='default'
+    if [ -z "$1" ]; then
+        echo "Warning: No argument provided. 'default' will be used as the cluster namespace."
+    else
+        NAMESPACE=$2
+    fi
+
+    kubectl create namespace $NAMESPACE
+    clusterctl generate cluster $NAME \
+        --target-namespace=$NAMESPACE \
+        --from https://github.com/mak3r/capi-demo/blob/main/providers/aws/cluster-template.yaml \
+        > $NAME.yaml
+    kubectl apply -f $NAME.yaml
+}
+
+import_clusters_in_namespace() {
+    NAMESPACE='default'
+    if [ -z "$1" ]; then
+        echo -e "\033[31mWarning: No argument provided. 'clusters in default namespace will be imported.\033[0m"
+    else
+        NAMESPACE=$1
+    fi
+
+    kubectl label namespace $NAMESPACE cluster-api.cattle.io/rancher-auto-import=true
 }
 
