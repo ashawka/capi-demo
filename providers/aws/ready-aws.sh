@@ -34,10 +34,9 @@ prep_env() {
     export AWS_CONTROL_PLANE_MACHINE_TYPE=t3a.large
     export AWS_NODE_MACHINE_TYPE=t3a.large
     export RKE2_VERSION=v1.30.3+rke2r1
-    export CONTROL_PLANE_MACHINE_COUNT=3
-    export WORKER_MACHINE_COUNT=2
+    export CONTROL_PLANE_MACHINE_COUNT=1
+    export WORKER_MACHINE_COUNT=1
     export AWS_B64ENCODED_CREDENTIALS=$(clusterawsadm bootstrap credentials encode-as-profile)
-    export KUBERNETES_VERSION=v1.30.3
 }
 
 generate_secret() {

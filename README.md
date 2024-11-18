@@ -45,9 +45,11 @@ Original docs here: https://github.com/rancher/cluster-api-provider-rke2/blob/ma
 1. Generate the secret
 
     `generate_secret`
+<!--
 1. Install a CAPI provider
 
     `kubectl apply -f providers/aws/CAPIProvider.yaml`
+-->
 1. Install the Infrastucture provider
 
     `kubectl apply -f providers/aws/InfrastructureProviderAWS.yaml`
@@ -59,12 +61,13 @@ Original docs here: https://github.com/rancher/cluster-api-provider-rke2/blob/ma
 1. Source some bash functions for the next steps
 
     `source providers/aws/ready-aws.sh`
-1. Prep env variables
+1. Prep env variables 
+    * NOTE: Do not include `.pem` extension of the key name
 
     `prep_env [your-aws-ssh-key-name]`
 1. Create a cluster yaml configuration
 
-    `create_cluster [cluster-name] > [cluster-name].yaml`
+    `create_cluster [cluster-name]`
 1. Apply the cluster config
 
     `kubectl apply -f [cluster-name].yaml`
