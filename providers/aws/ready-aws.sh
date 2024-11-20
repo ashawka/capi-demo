@@ -90,12 +90,13 @@ create_cluster_in_namespace() {
         NAMESPACE=$2
     fi
 
+    CONTEXT=$(kubectl config current-context)
     kubectl create namespace $NAMESPACE
     clusterctl generate cluster $NAME \
         --target-namespace=$NAMESPACE \
         --from https://github.com/mak3r/capi-demo/blob/main/providers/aws/cluster-template.yaml \
-        > $NAME.yaml
-    kubectl apply -f $NAME.yaml
+        > $NAME-$CONTEXT.yaml
+    kubectl apply -f $NAME-$CONTEXT.yaml
 }
 
 import_clusters_in_namespace() {
