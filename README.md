@@ -60,9 +60,16 @@ Original docs here: https://github.com/rancher/cluster-api-provider-rke2/blob/ma
 
     `prep_env [your-aws-ssh-key-name]`
 1. Create a cluster yaml configuration
-    * NOTE: This creates the cluster configuration and applies it.
+    * NOTE: These methods create the cluster configuration and apply it with the active kubeconfig.
 
     `create_cluster [cluster-name]`
+    * OR Create a cluster with a namespace
+
+    `create_cluster_in_namespace [cluster-name] [namespace]`
+
+1. Import the cluster(s) into rancher
+
+    `import_clusters_in_namespace [namespace]`
 
 ## Debugging
 
