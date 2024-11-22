@@ -243,7 +243,7 @@ spec:
 apiVersion: addons.cluster.x-k8s.io/v1beta1
 kind: ClusterResourceSet
 metadata:
-  name: crs-ccm
+  name: ${CLUSTER_NAME}-crs-ccm
 spec:
   clusterSelector:
     matchLabels:
@@ -256,7 +256,7 @@ spec:
 apiVersion: addons.cluster.x-k8s.io/v1beta1
 kind: ClusterResourceSet
 metadata:
-  name: crs-csi
+  name: ${CLUSTER_NAME}-crs-csi
 spec:
   clusterSelector:
     matchLabels:

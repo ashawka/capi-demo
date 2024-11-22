@@ -99,6 +99,20 @@ create_cluster_in_namespace() {
     kubectl label cluster.cluster.x-k8s.io $NAME cluster-api.cattle.io/rancher-auto-import=true -n $NAMESPACE
 }
 
+create_autoscale_cluster() {
+    NAME='default-cluster'
+    if [ -z "$1" ]; then
+        echo "Warning: No argument provided. 'default-cluster' will be used as the cluster name."
+    else
+        NAME=$1
+    fi
+
+    clusterctl generate cluster $NAME \
+        --from https://github.com/mak3r/capi-demo/blob/main/providers/aws/cluster-template-autoscale.yaml \
+        > $NAME.yaml
+    kubectl apply -f $NAME.yaml
+}
+
 import_clusters_in_namespace() {
     NAMESPACE='default'
     if [ -z "$1" ]; then
@@ -119,10 +133,10 @@ install_autoscaling() {
     fi
 
      helm repo add autoscaler https://kubernetes.github.io/autoscaler
+     helm update autoscaler
      helm install cluster-autoscaler autoscaler/cluster-autoscaler \
        --namespace kube-system \
        --set cloudProvider=aws \
        --set autoDiscovery.clusterName=$NAME \
        --set awsRegion=$AWS_REGION
-     ```
 }
