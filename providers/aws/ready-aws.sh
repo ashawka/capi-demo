@@ -53,6 +53,24 @@ stringData:
 EOF
 }
 
+generate_hpa() {
+    kubectl apply -f -<<EOF
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: $CLUSTER_NAME-hpa
+  namespace: kube-system                                  # Assuming cluster autoscaler is running in kube-system
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: $CLUSTER_NAME-md-0                                      # Ensure this matches your deployment's name
+  minReplicas: 2                                          # Minimum nodes
+  maxReplicas: 5                                          # Maximum nodes
+  targetCPUUtilizationPercentage: 80                      # Adjust thresholds as necessary for your needs
+EOF
+}
+
 init_aws() {
     #clusterctl init --infrastructure aws
     prep_env
@@ -133,8 +151,8 @@ install_autoscaling() {
     fi
 
      helm repo add autoscaler https://kubernetes.github.io/autoscaler
-     helm update autoscaler
-     helm install cluster-autoscaler autoscaler/cluster-autoscaler \
+     helm repo update autoscaler
+     helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler \
        --namespace kube-system \
        --set cloudProvider=aws \
        --set autoDiscovery.clusterName=$NAME \

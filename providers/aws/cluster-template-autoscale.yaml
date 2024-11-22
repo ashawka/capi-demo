@@ -197,7 +197,7 @@ spec:
       ami:
         id: ${AWS_AMI_ID}
       instanceType: "${AWS_NODE_MACHINE_TYPE}"
-      iamInstanceProfile: "nodes.cluster-api-provider-aws.sigs.k8s.io"
+      iamInstanceProfile: "K8sClusterAutoscalerInstanceProfile"
       sshKeyName: "${AWS_SSH_KEY_NAME}"
       rootVolume: 
         size: 50
@@ -214,21 +214,6 @@ spec:
         airGapped: true
       preRKE2Commands:
       - sudo hostnamectl set-hostname $(curl -s http://169.254.169.254/1.0/meta-data/hostname)
----
-apiVersion: autoscaling/v1
-kind: HorizontalPodAutoscaler
-metadata:
-  name: ${CLUSTER_NAME}-hpa
-  namespace: kube-system                                  # Assuming cluster autoscaler is running in kube-system
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: ${CLUSTER_NAME}-md-0                                      # Ensure this matches your deployment's name
-  minReplicas: 2                                          # Minimum nodes
-  maxReplicas: 5                                          # Maximum nodes
-  targetCPUUtilizationPercentage: 80                      # Adjust thresholds as necessary for your needs
-
 ---
 # apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
 # kind: AWSClusterControllerIdentity
