@@ -232,7 +232,7 @@ spec:
 apiVersion: addons.cluster.x-k8s.io/v1beta1
 kind: ClusterResourceSet
 metadata:
-  name: capi-ec2-crs-ccm
+  name: capi-ec2-sm-crs-ccm
   namespace: default
 spec:
   clusterSelector:
@@ -246,7 +246,7 @@ spec:
 apiVersion: addons.cluster.x-k8s.io/v1beta1
 kind: ClusterResourceSet
 metadata:
-  name: capi-ec2-crs-csi
+  name: capi-ec2-sm-crs-csi
   namespace: default
 spec:
   clusterSelector:
