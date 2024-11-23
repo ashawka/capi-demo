@@ -123,7 +123,7 @@ spec:
     apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
     kind: AWSMachineTemplate
     name: capi-ec2-sm-control-plane
-  nodeDrainTimeout: "0"
+  nodeDrainTimeout: 2m
   preRKE2Commands:
   - sudo hostnamectl set-hostname $(curl -s http://169.254.169.254/1.0/meta-data/hostname)
   registrationMethod: internal-first

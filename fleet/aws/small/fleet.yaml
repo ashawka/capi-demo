@@ -1,0 +1,6 @@
+diff:
+  comparePatches:
+  - apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+    kind: RKE2ControlPlane
+    operations:
+    - {"op":"remove", "path":"/spec/nodeDrainTimeout"}
