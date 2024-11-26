@@ -168,6 +168,9 @@ spec:
   selector:
     matchLabels:
       cluster.x-k8s.io/cluster-name: ${CLUSTER_NAME}
+  replicas: ${WORKER_MACHINE_COUNT}  # Desired number of replicas
+  minReplicas: ${WORKER_MACHINE_COUNT}  # Minimum replicas (optional)
+  maxReplicas: 6  # Set to your desired max
   template:
     metadata:
       labels:
