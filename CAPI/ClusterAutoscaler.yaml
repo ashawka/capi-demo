@@ -23,11 +23,27 @@ spec:
         - /cluster-autoscaler
         args:
         - --cloud-provider=clusterapi
+        - --v=4
+        - --kubeconfig=/mnt/kubeconfig-downstream/kubeconfig
+        - --cloud-config=/mnt/kubeconfig-cp/kubeconfig
+        - --node-group-auto-discovery=clusterapi:clusterName=${CLUSTER_NAME},clusterapi:controlPlane=true
+        volumeMounts:
+        - mountPath: /mnt/kubeconfig-downstream
+          name: kubeconfig-downstream
+        - mountPath: /mnt/kubeconfig-cp
+          name: kubeconfig-cp
       serviceAccountName: cluster-autoscaler
       terminationGracePeriodSeconds: 10
       tolerations:
       - effect: NoSchedule
         key: node-role.kubernetes.io/control-plane
+      volumes:
+      - name: kubeconfig-downstream
+        secret:
+          secretName: kubeconfig-${CLUSTER_NAME}
+      - name: kubeconfig-cp
+        secret:
+          secretName: kubeconfig-cp
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
