@@ -29,6 +29,8 @@ prep_env() {
     # us-west-1: ami-061e0d437b327464e
     export AWS_AMI_ID="ami-04418d0a73ebfbb4a"
 
+    # Auto Scaling Group
+    export AWS_ASG_NAME=Mak3rCAPIAutoScalingDemo
 
     # Select instance types
     export AWS_CONTROL_PLANE_MACHINE_TYPE=t3a.large
@@ -129,6 +131,32 @@ create_autoscale_cluster() {
         --from https://github.com/mak3r/capi-demo/blob/main/providers/aws/cluster-template-autoscale.yaml \
         > $NAME.yaml
     kubectl apply -f $NAME.yaml
+}
+
+# Create an autoscaling cluster in a specific namespace
+# Name then namespace as arguments
+create_autoscale_cluster_in_namespace() {
+    NAME='default-cluster'
+    if [ -z "$1" ]; then
+        echo "Warning: No argument provided. 'default-cluster' will be used as the cluster name."
+    else
+        NAME=$1
+    fi
+
+    NAMESPACE='default'
+    if [ -z "$1" ]; then
+        echo "Warning: No argument provided. 'default' will be used as the cluster namespace."
+    else
+        NAMESPACE=$2
+    fi
+    CONTEXT=$(kubectl config current-context)
+    kubectl create namespace $NAMESPACE
+    clusterctl generate cluster $NAME \
+        --target-namespace=$NAMESPACE \
+        --from https://github.com/mak3r/capi-demo/blob/main/providers/aws/cluster-template-autoscale.yaml \
+        > $NAME-$CONTEXT.yaml
+    kubectl apply -f $NAME-$CONTEXT.yaml
+    kubectl label cluster.cluster.x-k8s.io $NAME cluster-api.cattle.io/rancher-auto-import=true -n $NAMESPACE
 }
 
 import_clusters_in_namespace() {

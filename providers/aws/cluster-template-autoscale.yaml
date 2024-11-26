@@ -165,7 +165,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   clusterName: ${CLUSTER_NAME}
-  replicas: ${WORKER_MACHINE_COUNT}
   selector:
     matchLabels:
       cluster.x-k8s.io/cluster-name: ${CLUSTER_NAME}
@@ -173,6 +172,12 @@ spec:
     metadata:
       labels:
         cluster.x-k8s.io/cluster-name: ${CLUSTER_NAME}
+      annotations:
+        cluster-autoscaler.kubernetes.io/enabled: "true"
+        cluster-autoscaler.kubernetes.io/${CLUSTER_NAME}: "true"
+        cluster-autoscaler.kubernetes.io/${AWS_ASG_NAME}: "true"
+        cluster-api-autoscaler-node-group-min-size: ${WORKER_MACHINE_COUNT}
+        cluster-api-autoscaler-node-group-max-size: 5
     spec:
       clusterName: ${CLUSTER_NAME}
       version: ${RKE2_VERSION}
@@ -197,7 +202,7 @@ spec:
       ami:
         id: ${AWS_AMI_ID}
       instanceType: "${AWS_NODE_MACHINE_TYPE}"
-      iamInstanceProfile: "K8sClusterAutoscalerInstanceProfile"
+      iamInstanceProfile: control-plane.cluster-api-provider-aws.sigs.k8s.io
       sshKeyName: "${AWS_SSH_KEY_NAME}"
       rootVolume: 
         size: 50
