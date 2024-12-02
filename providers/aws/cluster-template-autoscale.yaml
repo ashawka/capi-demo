@@ -176,8 +176,8 @@ spec:
       annotations:
         cluster-autoscaler.kubernetes.io/enabled: "true"
         cluster-autoscaler.kubernetes.io/${CLUSTER_NAME}: "true"
-        cluster-api-autoscaler-node-group-min-size: "${WORKER_MACHINE_COUNT}"
-        cluster-api-autoscaler-node-group-max-size: "6"
+        cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "6"
+        cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "${WORKER_MACHINE_COUNT}"
     spec:
       clusterName: ${CLUSTER_NAME}
       version: ${RKE2_VERSION}
