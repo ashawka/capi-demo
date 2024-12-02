@@ -26,6 +26,7 @@ spec:
         - --v=4
         - --kubeconfig=/mnt/kubeconfig-downstream/kubeconfig
         - --cloud-config=/mnt/kubeconfig-cp/kubeconfig
+        - --enforce-node-group-min-size
         - --node-group-auto-discovery=clusterapi:clusterName=${CLUSTER_NAME},clusterapi:controlPlane=true
         volumeMounts:
         - mountPath: /mnt/kubeconfig-downstream
