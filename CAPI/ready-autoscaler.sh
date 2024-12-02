@@ -10,3 +10,10 @@ install_autoscaler() {
 
     envsubst < CAPI/ClusterAutoscaler.yaml | kubectl apply -f -
 }
+
+remove_autoscaler() {
+    export AUTOSCALER_NS=kube-system
+    export AUTOSCALER_IMAGE=registry.k8s.io/autoscaling/cluster-autoscaler:v1.29.0
+
+    kubectl delete -f CAPI/ClusterAutoscaler.yaml
+}

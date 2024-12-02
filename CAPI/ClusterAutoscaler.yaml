@@ -27,7 +27,6 @@ spec:
         - --kubeconfig=/mnt/kubeconfig-downstream/kubeconfig
         - --cloud-config=/mnt/kubeconfig-cp/kubeconfig
         - --enforce-node-group-min-size
-        - --node-group-auto-discovery=clusterapi:clusterName=${CLUSTER_NAME},clusterapi:controlPlane=true
         volumeMounts:
         - mountPath: /mnt/kubeconfig-downstream
           name: kubeconfig-downstream
@@ -42,9 +41,15 @@ spec:
       - name: kubeconfig-downstream
         secret:
           secretName: kubeconfig-${CLUSTER_NAME}
+          items:
+          - key: kubeconfig-blue.yaml
+            path: kubeconfig
       - name: kubeconfig-cp
         secret:
           secretName: kubeconfig-cp
+          items:
+          - key: kubeconfig
+            path: kubeconfig
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
