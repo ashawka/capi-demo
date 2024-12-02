@@ -168,7 +168,6 @@ spec:
   selector:
     matchLabels:
       cluster.x-k8s.io/cluster-name: ${CLUSTER_NAME}
-  replicas: ${WORKER_MACHINE_COUNT}  # Desired number of replicas
   template:
     metadata:
       labels:
