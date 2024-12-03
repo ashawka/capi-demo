@@ -163,6 +163,11 @@ kind: MachineDeployment
 metadata:
   name: ${CLUSTER_NAME}-md-0
   namespace: ${NAMESPACE}
+  annotations:
+    cluster-autoscaler.kubernetes.io/enabled: "true"
+    cluster-autoscaler.kubernetes.io/${CLUSTER_NAME}: "true"
+    cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "6"
+    cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "${WORKER_MACHINE_COUNT}"
 spec:
   clusterName: ${CLUSTER_NAME}
   selector:
