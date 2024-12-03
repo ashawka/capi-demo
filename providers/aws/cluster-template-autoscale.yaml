@@ -168,8 +168,6 @@ metadata:
     cluster-autoscaler.kubernetes.io/${CLUSTER_NAME}: "true"
     cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "6"
     cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "${WORKER_MACHINE_COUNT}"
-    machinedeployment.clusters.x-k8s.io/desired-replicas: '2'
-    machinedeployment.clusters.x-k8s.io/max-replicas: '6'
 spec:
   clusterName: ${CLUSTER_NAME}
   selector:
