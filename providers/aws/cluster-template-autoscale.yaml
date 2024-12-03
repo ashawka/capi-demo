@@ -168,6 +168,8 @@ metadata:
     cluster-autoscaler.kubernetes.io/${CLUSTER_NAME}: "true"
     cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "6"
     cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "${WORKER_MACHINE_COUNT}"
+    machinedeployment.clusters.x-k8s.io/desired-replicas: '2'
+    machinedeployment.clusters.x-k8s.io/max-replicas: '6'
 spec:
   clusterName: ${CLUSTER_NAME}
   selector:
@@ -219,6 +221,10 @@ spec:
       preRKE2Commands:
       - sudo hostnamectl set-hostname $(curl -s http://169.254.169.254/1.0/meta-data/hostname)
 ---
+# Do this only once per namespace
+# For example multiple clusters in the same namespace,
+# just do this before creating the first one
+#
 # apiVersion: infrastructure.cluster.x-k8s.io/v1beta2
 # kind: AWSClusterControllerIdentity
 # metadata:

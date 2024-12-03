@@ -169,20 +169,3 @@ import_clusters_in_namespace() {
 
     kubectl label namespace $NAMESPACE cluster-api.cattle.io/rancher-auto-import=true
 }
-
-install_autoscaling() {
-    NAME='default-cluster'
-    if [ -z "$1" ]; then
-        echo "Warning: No argument provided. 'default-cluster' will be used as the cluster name."
-    else
-        NAME=$1
-    fi
-
-     helm repo add autoscaler https://kubernetes.github.io/autoscaler
-     helm repo update autoscaler
-     helm upgrade --install cluster-autoscaler autoscaler/cluster-autoscaler \
-       --namespace kube-system \
-       --set cloudProvider=aws \
-       --set autoDiscovery.clusterName=$NAME \
-       --set awsRegion=$AWS_REGION
-}
