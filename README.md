@@ -82,6 +82,16 @@ Original docs here: https://github.com/rancher/cluster-api-provider-rke2/blob/ma
 
 If things don't go as expected, look at the capa-controller-manager pod logs. From there, hopefully you can work your way through other resources to figure out what is missing/misconfigured/etc.
 
+## Additional demo points not yet setup
+
+* Alternate CAPI infrastructure provider. e.g. Azure, VMWare, etc.
+  * value of instances is that the infra provider is agnostic to capi
+  * using managed k8s means greater variation in configuration because it involves infra, bootstrap and control plane provider variations.
+* Rancher projects vs Tanzu workspaces (in Rancher Manger or Downstream clusters?)
+* Auto deployment of SUSE Security, RBAC configurations and SUSE Observability
+* Modify downstream cluster volume sizes as part of the initial creation step
+* Use ClusterClass for improved templating demo
+
 ## Cleanup
 
 1. for each cluster created `kubectl delete -f <cluster_name>.yaml`
