@@ -23,18 +23,36 @@ prep_env() {
     # "Name": "Ubuntu Server 22.04 LTS (HVM), SSD Volume"
     # export AWS_AMI_ID="ami-0a0e5d9c7acc336f1"
 
+
+    # Custom AMIs
+    # aws ec2 describe-images --owners "488083572758" --filters "Name=name,Values=capa*" "Name=architecture,Values=arm64,x86_64"
+
+    # x86_64 AMI
     # Airgapped AMI
     # "Name": "amazon-ebs.openSUSE-leap-15.6-rke2"
     # us-east-1: ami-04418d0a73ebfbb4a
     # us-west-1: ami-061e0d437b327464e
-    export AWS_AMI_ID="ami-04418d0a73ebfbb4a"
+    ## uncomment the following lines to use the x86_64 AMI
+    # export AWS_AMI_ID="ami-04418d0a73ebfbb4a"
+    # export AWS_CONTROL_PLANE_MACHINE_TYPE=t3a.large
+    # export AWS_NODE_MACHINE_TYPE=t3a.large
+
+    # Arm64 AMI
+    # "Name": capa-ami-openSUSE-leap-15.6-arm64-1.30.7-rke2r1-1733863209
+    # "AMI": ami-02c1d58242ed9e995
+    # "Owner id": "488083572758"
+    # "Name": "amazon-ebs.openSUSE-leap-15.6-arm64"
+    # us-east-1: ami-02c1d58242ed9e995
+    # us-west-1: ami-0f0e7af7d5dffddca
+    ## uncomment the following lines to use the arm64 AMI
+    export AWS_AMI_ID="ami-02c1d58242ed9e995"
+    export AWS_CONTROL_PLANE_MACHINE_TYPE=a1.large
+    export AWS_NODE_MACHINE_TYPE=a1.large
 
     # Auto Scaling Group
     export AWS_ASG_NAME=Mak3rCAPIAutoScalingDemo
 
     # Select instance types
-    export AWS_CONTROL_PLANE_MACHINE_TYPE=t3a.large
-    export AWS_NODE_MACHINE_TYPE=t3a.large
     export RKE2_VERSION=v1.30.3+rke2r1
     export CONTROL_PLANE_MACHINE_COUNT=1
     export WORKER_MACHINE_COUNT=1
