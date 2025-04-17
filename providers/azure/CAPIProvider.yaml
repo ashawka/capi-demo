@@ -1,0 +1,24 @@
+apiVersion: turtles-capi.cattle.io/v1alpha1
+kind: CAPIProvider
+metadata:
+  name: azure
+  namespace: capi-system # Resource is namespace scoped.
+spec:
+  name: azure # Defines the provider kind to provision.
+  type: infrastructure # CAPI Provider resource kind to provision.
+  variables: # Additional environment variables to be declared inside the referenced spec.configSecret
+    CAPZ_LOGLEVEL: "4"
+    EXP_CLUSTER_TOPOLOGY: "true"
+    EXP_CLUSTER_RESOURCE_SET: "true"
+    EXP_MACHINE_POOL: "true"
+    EXP_AKS_RESOURCE_HEALTH: "true"
+
+
+  configSecret:
+    name: cluster-identity-secret # This secret will be created or adjusted based on the content of the spec.features and spec.variables, without overriding non-overlapping content.
+  #credentials:
+   # rancherCloudCredential: aws-creds # Rancher secret content will be translated to CAPI Operator environment secret.
+  features: # Additional features to be declared inside the referenced spec.configSecret.
+    clusterResourceSet: true
+    clusterTopology: true
+    machinePool: true
